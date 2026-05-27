@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">EcoMind AI</string>
+    <string name="title_activity_main">EcoMind AI</string>
+    <string name="package_name">com.ecomindai.app</string>
+    <string name="custom_url_scheme">com.ecomindai.app</string>
+</resources>

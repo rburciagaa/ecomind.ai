@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoMind AI - Inteligencia Artificial Ecológica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #388E3C 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(90deg, #1B5E20, #4CAF50);
+            padding: 30px 0;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            color: white;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        /* Main Content */
+        main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Input Section */
+        .input-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .input-section h2 {
+            color: #1B5E20;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: 2px solid #81C784;
+            border-radius: 8px;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 0.95em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Buttons */
+        button {
+            background: linear-gradient(135deg, #0d4810, #1a6e3a);
+            color: white;
+            padding: 12px 24px;
+            border: 2px solid #81C784;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #1a6e3a, #2E7D32);
+            border-color: #00ff88;
+            box-shadow: 0 0 16px rgba(0, 255, 136, 0.3);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .button-group button {
+            margin: 0;
+        }
+
+        /* Results Section */
+        .results-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .results-section h2 {
+            color: #1B5E20;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        #resultado {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+            max-height: 500px;
+            overflow-y: auto;
+            font-size: 0.95em;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        #resultado:empty::before {
+            content: "Aquí aparecerán los resultados...";
+            color: #999;
+            font-style: italic;
+        }
+
+        #imagenGenerada {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        #imagenGenerada.visible {
+            display: block;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Export Section */
+        .export-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            grid-column: 1 / -1;
+        }
+
+        .export-section h2 {
+            color: #1B5E20;
+            margin-bottom: 15px;
+        }
+
+        .export-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .export-buttons button {
+            font-size: 0.9em;
+            padding: 10px 16px;
+        }
+
+        /* Status Bar */
+        footer {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #statusText {
+            color: #2E7D32;
+            font-weight: bold;
+        }
+
+        #downloadLinks {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .download-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+
+        .download-link:hover {
+            background: #2E7D32;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+
+            .export-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .success-message.visible {
+            display: block;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌿 EcoMind AI</h1>
+            <p>Inteligencia Artificial para Ecología y Medio Ambiente</p>
+        </header>
+
+        <main>
+            <!-- Input Section -->
+            <section class="input-section">
+                <h2>Consulta IA</h2>
+                <div class="success-message" id="successMsg"></div>
+                <div class="error-message" id="errorMsg"></div>
+                
+                <input 
+                    type="text" 
+                    id="inputPregunta" 
+                    placeholder="Escribe tu pregunta ecológica..."
+                    @keypress="handleEnter"
+                >
+                
+                <button onclick="enviarPregunta()">Preguntar IA</button>
+                
+                <div class="button-group">
+                    <button onclick="generarImagen()">Generar Imagen</button>
+                    <button onclick="mostrarFormato('pdf')">Exportar PDF</button>
+                    <button onclick="mostrarFormato('ppt')">Exportar PPT</button>
+                    <button onclick="mostrarFormato('txt')">Exportar TXT</button>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Procesando...</p>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section">
+                <h2>Resultado</h2>
+                <div id="resultado" class="fade-in"></div>
+                <img id="imagenGenerada" alt="Imagen generada">
+            </section>
+        </main>
+
+        <!-- Export Section -->
+        <section class="export-section">
+            <h2>📁 Descargas</h2>
+            <div id="downloadLinks"></div>
+            <p id="downloadEmpty" style="color: #999; font-style: italic;">
+                Los archivos generados aparecerán aquí
+            </p>
+        </section>
+
+        <!-- Status Bar -->
+        <footer>
+            <span id="statusText">Listo</span>
+            <div id="downloadLinks" style="flex: 1;"></div>
+        </footer>
+    </div>
+
+    <script>
+        // Variables globales
+        let textoActual = '';
+        let archivosGenerados = [];
+
+        // Funciones de UI
+        function mostrarLoading(mostrar = true) {
+            const loading = document.getElementById('loading');
+            if (mostrar) {
+                loading.classList.add('active');
+                document.getElementById('statusText').textContent = 'Procesando...';
+            } else {
+                loading.classList.remove('active');
+                document.getElementById('statusText').textContent = 'Listo';
+            }
+        }
+
+        function mostrarMensaje(tipo, mensaje) {
+            const successMsg = document.getElementById('successMsg');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            successMsg.classList.remove('visible');
+            errorMsg.classList.remove('visible');
+            
+            if (tipo === 'success') {
+                successMsg.textContent = mensaje;
+                successMsg.classList.add('visible');
+                setTimeout(() => successMsg.classList.remove('visible'), 4000);
+            } else if (tipo === 'error') {
+                errorMsg.textContent = mensaje;
+                errorMsg.classList.add('visible');
+                setTimeout(() => errorMsg.classList.remove('visible'), 4000);
+            }
+        }
+
+        function agregarDescarga(nombre, url) {
+            const container = document.getElementById('downloadLinks');
+            if (document.getElementById('downloadEmpty')) {
+                document.getElementById('downloadEmpty').style.display = 'none';
+            }
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = nombre;
+            link.className = 'download-link';
+            link.textContent = `📥 ${nombre}`;
+            container.appendChild(link);
+            
+            archivosGenerados.push({nombre, url});
+        }
+
+        // API Calls
+        async function enviarPregunta() {
+            const pregunta = document.getElementById('inputPregunta').value.trim();
+            
+            if (!pregunta) {
+                mostrarMensaje('error', 'Por favor escribe una pregunta');
+                return;
+            }
+
+            mostrarLoading(true);
+            document.getElementById('resultado').innerHTML = '';
+
+            try {
+                const response = await fetch('/api/pregunta', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({pregunta})
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    textoActual = data.respuesta;
+                    mostrarResultado(data.respuesta);
+                    mostrarMensaje('success', 'Respuesta generada correctamente');
+                } else {
+                    mostrarMensaje('error', data.error || 'Error al procesar');
+                }
+            } catch (error) {
+                mostrarMensaje('error', 'Error de conexión: ' + error.message);
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        function mostrarResultado(texto) {
+            const resultado = document.getElementById('resultado');
+            resultado.innerHTML = texto
+                .split('\n')
+                .map(linea => {
+                    if (linea.trim().startsWith('**')) {
+                        return `<strong>${linea.replace(/\*\*/g, '')}</strong>`;
+                    }
+                    return linea;
+                })
+                .join('<br>');
+        }
+
+        async function generarImagen() {
+            const consulta = document.getElementById('inputPregunta').value.trim();
+            
+            if (!consulta) {
+                mostrarMensaje('error', 'Por favor escribe una descripción');
+                return;
+            }
+
+            mostrarLoading(true);
+            document.getElementById('imagenGenerada').classList.remove('visible');
+
+            try {
+                const response = await fetch('/api/generar-imagen-ia', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({consulta})
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const imagen = document.getElementById('imagenGenerada');
+                    imagen.src = data.url;
+                    imagen.classList.add('visible');
+                    
+                    agregarDescarga(data.filename, data.url);
+                    mostrarMensaje('success', 'Imagen generada correctamente');
+                } else {
+                    mostrarMensaje('error', data.error || 'Error al generar imagen');
+                }
+            } catch (error) {
+                mostrarMensaje('error', 'Error: ' + error.message);
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        async function mostrarFormato(formato) {
+            if (!textoActual) {
+                mostrarMensaje('error', 'Primero genera un resultado con "Preguntar IA"');
+                return;
+            }
+
+            mostrarLoading(true);
+
+            try {
+                let endpoint = '';
+                let nombreArchivo = '';
+
+                if (formato === 'pdf') {
+                    endpoint = '/api/generar-pdf';
+                    nombreArchivo = 'Reporte.pdf';
+                } else if (formato === 'ppt') {
+                    endpoint = '/api/generar-ppt';
+                    nombreArchivo = 'Reporte.pptx';
+                } else if (formato === 'txt') {
+                    endpoint = '/api/generar-txt';
+                    nombreArchivo = 'Reporte.txt';
+                }
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({texto: textoActual})
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    agregarDescarga(data.filename, data.url);
+                    mostrarMensaje('success', `${formato.toUpperCase()} generado correctamente`);
+                } else {
+                    mostrarMensaje('error', data.error || 'Error al generar archivo');
+                }
+            } catch (error) {
+                mostrarMensaje('error', 'Error: ' + error.message);
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        // Eventos
+        document.getElementById('inputPregunta').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                enviarPregunta();
+            }
+        });
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('statusText').textContent = 'Listo';
+        });
+    </script>
+</body>
+</html>

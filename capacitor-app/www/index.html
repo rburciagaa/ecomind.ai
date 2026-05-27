@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EcoMind AI</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #388E3C 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container { max-width: 100%; padding: 12px; }
+
+        header {
+            background: linear-gradient(90deg, #1B5E20, #4CAF50);
+            padding: 20px 15px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+        }
+
+        header h1 { font-size: 1.8em; margin-bottom: 4px; }
+        header p { font-size: 0.9em; opacity: 0.95; }
+
+        .card {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .card h2 { color: #1B5E20; margin-bottom: 12px; font-size: 1.1em; }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 11px;
+            margin-bottom: 10px;
+            border: 2px solid #81C784;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 8px rgba(76,175,80,0.3);
+        }
+
+        textarea { resize: vertical; min-height: 70px; }
+
+        button {
+            background: linear-gradient(135deg, #0d4810, #1a6e3a);
+            color: white;
+            padding: 12px;
+            border: 2px solid #81C784;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+
+        button:active { opacity: 0.85; transform: scale(0.98); }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-grid button { margin: 0; font-size: 0.85em; }
+
+        #resultado {
+            background: #f9f9f9;
+            padding: 14px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 0.93em;
+            line-height: 1.6;
+            min-height: 60px;
+            color: #444;
+        }
+
+        #imagenGenerada {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .loading.active { display: block; }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .msg {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: none;
+            font-size: 0.9em;
+        }
+
+        .msg.success { background: #d4edda; color: #155724; display: block; }
+        .msg.error   { background: #f8d7da; color: #721c24; display: block; }
+
+        .download-link {
+            display: inline-block;
+            padding: 8px 14px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.88em;
+            margin: 4px 4px 4px 0;
+        }
+
+        footer {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            text-align: center;
+            color: #2E7D32;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌿 EcoMind AI</h1>
+            <p>Inteligencia Artificial Ecológica</p>
+        </header>
+
+        <div class="card">
+            <h2>Consulta a la IA</h2>
+            <div class="msg" id="msgBox"></div>
+            <input type="text" id="inputPregunta" placeholder="Escribe tu pregunta ecológica...">
+            <button onclick="enviarPregunta()">🤖 Preguntar IA</button>
+            <div class="btn-grid">
+                <button onclick="generarImagen()">🖼️ Generar Imagen</button>
+                <button onclick="exportar('pdf')">📄 Exportar PDF</button>
+                <button onclick="exportar('ppt')">📊 Exportar PPT</button>
+                <button onclick="exportar('txt')">📝 Exportar TXT</button>
+            </div>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Procesando...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Resultado</h2>
+            <div id="resultado" style="color:#999;font-style:italic;">Aquí aparecerán los resultados...</div>
+            <img id="imagenGenerada" alt="Imagen generada">
+        </div>
+
+        <div class="card">
+            <h2>📁 Archivos generados</h2>
+            <div id="downloadLinks"><span style="color:#999;font-style:italic;font-size:0.9em;">Los archivos aparecerán aquí</span></div>
+        </div>
+
+        <footer>EcoMind AI v1.0 — Powered by Groq AI</footer>
+    </div>
+
+    <script>
+        // IMPORTANTE: Reemplaza esta URL con la URL real de tu app en Render
+        // despues de desplegar el backend
+        const API_BASE = "https://TU-APP.onrender.com";
+
+        let textoActual = "";
+
+        function mostrarLoading(v) {
+            document.getElementById("loading").classList.toggle("active", v);
+        }
+
+        function mostrarMsg(tipo, texto) {
+            const box = document.getElementById("msgBox");
+            box.className = "msg " + tipo;
+            box.textContent = texto;
+            setTimeout(() => { box.className = "msg"; box.textContent = ""; }, 4000);
+        }
+
+        function agregarDescarga(nombre, url) {
+            const c = document.getElementById("downloadLinks");
+            if (c.querySelector("span")) c.innerHTML = "";
+            const a = document.createElement("a");
+            a.href = API_BASE + url;
+            a.className = "download-link";
+            a.textContent = "📥 " + nombre;
+            a.target = "_blank";
+            c.appendChild(a);
+        }
+
+        async function enviarPregunta() {
+            const pregunta = document.getElementById("inputPregunta").value.trim();
+            if (!pregunta) { mostrarMsg("error", "Escribe una pregunta"); return; }
+
+            mostrarLoading(true);
+            document.getElementById("resultado").textContent = "";
+
+            try {
+                const res = await fetch(API_BASE + "/api/pregunta", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({pregunta})
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    textoActual = data.respuesta;
+                    document.getElementById("resultado").innerHTML = data.respuesta
+                        .split("\n").map(l => l.startsWith("**")
+                            ? "<strong>" + l.replace(/\*\*/g, "") + "</strong>"
+                            : l).join("<br>");
+                    mostrarMsg("success", "Respuesta generada");
+                } else {
+                    mostrarMsg("error", data.error || "Error al procesar");
+                }
+            } catch (e) {
+                mostrarMsg("error", "Error de conexión: " + e.message);
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        async function generarImagen() {
+            const consulta = document.getElementById("inputPregunta").value.trim();
+            if (!consulta) { mostrarMsg("error", "Escribe una descripción"); return; }
+
+            mostrarLoading(true);
+            try {
+                const res = await fetch(API_BASE + "/api/generar-imagen-ia", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({consulta})
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    const img = document.getElementById("imagenGenerada");
+                    img.src = API_BASE + data.url;
+                    img.style.display = "block";
+                    agregarDescarga(data.filename, data.url);
+                    mostrarMsg("success", "Imagen generada");
+                } else {
+                    mostrarMsg("error", data.error || "Error al generar imagen");
+                }
+            } catch (e) {
+                mostrarMsg("error", "Error: " + e.message);
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        async function exportar(formato) {
+            if (!textoActual) { mostrarMsg("error", 'Primero genera un resultado con "Preguntar IA"'); return; }
+            mostrarLoading(true);
+            const endpoints = { pdf: "/api/generar-pdf", ppt: "/api/generar-ppt", txt: "/api/generar-txt" };
+            try {
+                const res = await fetch(API_BASE + endpoints[formato], {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({texto: textoActual})
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    agregarDescarga(data.filename, data.url);
+                    mostrarMsg("success", formato.toUpperCase() + " generado");
+                } else {
+                    mostrarMsg("error", data.error || "Error al generar archivo");
+                }
+            } catch (e) {
+                mostrarMsg("error", "Error: " + e.message);
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        document.getElementById("inputPregunta").addEventListener("keypress", e => {
+            if (e.key === "Enter") enviarPregunta();
+        });
+    </script>
+</body>
+</html>

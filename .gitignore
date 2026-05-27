@@ -1,0 +1,21 @@
+# Entorno Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+env/
+
+# Archivos generados por la app
+static/uploads/
+
+# Capacitor / Node
+capacitor-app/node_modules/
+capacitor-app/android/.gradle/
+capacitor-app/android/build/
+capacitor-app/android/app/build/
+capacitor-app/android/.idea/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
